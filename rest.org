@@ -1,0 +1,47 @@
+#+title: REST CALLS
+
+* Variables
+#+name: environment
+: local
+
+* Environments
+#+name: get-env
+#+begin_src python :var env=environment key="host"
+local = {
+    "host": "http://localhost:3000"
+}
+prod = {
+    "host": "http://localhost:80"
+}
+
+if env is "prod":
+ return prod.get(key)
+
+return local.get(key)
+#+end_src
+
+* Practice
+#+begin_src restclient :var host=get-env()
+GET :host/send
+#+end_src
+
+#+begin_src restclient :var host=get-env()
+GET :host/visitor/hey
+Authorization: Bearer enterprise_id
+Origin: http://localhost:3000
+#+end_src
+
+#+begin_src restclient :var host=get-env()
+POST :host/visitor/echo
+Authorization: Bearer enterprise_id
+Origin: http://localhost:3000
+Content-Type: application/json
+Hey there!
+#+end_src
+
+* TOKEN
+#+begin_src restclient :var host=get-env()
+GET :host/visitor/token/some_id
+Authorization: Bearer enterprise_id
+Origin: http://localhost:8081
+#+end_src
