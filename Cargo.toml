@@ -17,3 +17,4 @@ futures = "0.3"
 rdkafka = { version = "0.28", features = ["cmake-build"] }
 clap = { version = "3.2", features = ["derive"] }
 chrono = "0.4"
+uuid = { version = "1.1", features = ["v4", "fast-rng", "serde"] }

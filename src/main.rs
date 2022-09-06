@@ -1,19 +1,25 @@
-use axum::{response::Json, routing::get, Router};
+use axum::{response::Json, routing::post, Router};
 use futures::future::join_all;
+use rdkafka::config::ClientConfig;
+use rdkafka::error::KafkaError;
+use rdkafka::message::OwnedMessage;
+use rdkafka::producer::{FutureProducer, FutureRecord};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::boxed::Box;
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::spawn;
 use tokio::task::JoinHandle;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use uuid::{uuid, Uuid};
 
-// producer
-use futures::future::Future;
-use rdkafka::config::ClientConfig;
-use rdkafka::error::KafkaError;
-use rdkafka::message::OwnedMessage;
-use rdkafka::producer::{FutureProducer, FutureRecord};
-use std::boxed::Box;
+#[derive(Debug, Deserialize, Serialize)]
+struct ClientMessage {
+    to: Uuid,
+    from: Uuid,
+    content: String,
+}
 
 #[tokio::main]
 async fn main() {
@@ -29,7 +35,7 @@ async fn main() {
     // ########## SERVER ##########
     let server_handle = spawn(async move {
         // build our application with some routes
-        let app = Router::new().route("/send", get(json));
+        let app = Router::new().route("/send", post(send));
 
         // run it with hyper
         let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
@@ -58,8 +64,8 @@ async fn main() {
     let _results = join_all(handles).await;
 }
 
-async fn json() -> Json<Value> {
-    tracing::debug!("from method json {}", "hi");
+async fn send(Json(client_message): Json<Value>) -> Json<Value> {
+    tracing::debug!("Received ClientMessage {}", client_message);
     Json(json!({ "data": 42 }))
 }
 

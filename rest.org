@@ -22,7 +22,13 @@ return local.get(key)
 
 * Practice
 #+begin_src restclient :var host=get-env()
-GET :host/send
+POST :host/send
+Content-Type: application/json
+{
+    "to": "14412d14-c21d-4f00-a74e-f02146e16f48",
+    "from": "bba7745f-1426-4eea-a3f4-95ed1843193f",
+    "content": "Hello, world!"
+}
 #+end_src
 
 #+begin_src restclient :var host=get-env()
