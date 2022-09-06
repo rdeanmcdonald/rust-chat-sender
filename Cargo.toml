@@ -1,6 +1,7 @@
 [package]
 name = "send"
 version = "0.1.0"
+description = "A service which accepts messages from the client, and publishes to Kafka."
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -13,3 +14,6 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 axum = { version = "0.6.0-rc.1", features = [] }
 futures = "0.3"
+rdkafka = { version = "0.28", features = ["cmake-build"] }
+clap = { version = "3.2", features = ["derive"] }
+chrono = "0.4"
