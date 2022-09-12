@@ -1,7 +1,7 @@
 use axum::http::StatusCode;
-// use axum::response::Result;
 use axum::{response::Json, routing::post, Router};
 use futures::future::join_all;
+use message::ClientMessage;
 use rdkafka::config::ClientConfig;
 use rdkafka::error::KafkaError;
 use rdkafka::message::OwnedMessage;
@@ -15,13 +15,6 @@ use tokio::spawn;
 use tokio::task::JoinHandle;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::{uuid, Uuid};
-
-#[derive(Debug, Deserialize, Serialize)]
-struct ClientMessage {
-    to: Uuid,
-    from: Uuid,
-    content: String,
-}
 
 #[tokio::main]
 async fn main() {
@@ -59,11 +52,12 @@ async fn main() {
 async fn send(Json(client_message): Json<ClientMessage>, producer: FutureProducer) -> Json<Value> {
     tracing::debug!("Received {:?}", client_message);
 
+    let a = client_message.to.into_bytes();
     let delivery_status = producer
         .send(
             FutureRecord::to("messages")
                 .payload(&client_message.content)
-                .key("My key"),
+                .key(&client_message.to.into_bytes()),
             Duration::from_secs(0),
         )
         .await;
