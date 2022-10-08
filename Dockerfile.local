@@ -1,0 +1,18 @@
+# rust img doesn't work, rdkafka needs special build deps
+FROM rust
+RUN set -ex; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		cmake
+WORKDIR /usr/src
+RUN USER=root cargo new send
+WORKDIR /usr/src/send
+RUN rm Cargo.toml
+COPY ./Cargo.toml ./Cargo.toml
+RUN cargo build
+RUN rm src/*.rs
+COPY . .
+RUN cargo build
+EXPOSE 3000
+ENTRYPOINT ["sh", "-c", "./target/debug/send"]
+CMD []
