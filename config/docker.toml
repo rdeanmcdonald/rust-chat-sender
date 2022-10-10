@@ -1,2 +1,9 @@
 [log]
 level = "debug"
+
+[server]
+host = "0.0.0.0"
+
+[kafka]
+host = "kafka"
+port = "9092"

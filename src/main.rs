@@ -25,10 +25,6 @@ async fn main() {
     let server_handle = spawn(async move {
         let config = config::get_config();
 
-        println!(
-            "HIIIIIIIIIIII: {}",
-            config.get_string("kafka.host").unwrap()
-        );
         // kafka producer is cheap to clone
         let producer: FutureProducer = ClientConfig::new()
             .set(
@@ -45,8 +41,15 @@ async fn main() {
 
         let app = Router::new().route("/send", post(move |body| send(body, producer.clone())));
 
-        let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-        tracing::debug!("listening on {}", addr);
+        let addr = format!(
+            "{}:{}",
+            config.get_string("server.host").unwrap(),
+            config.get_int("server.port").unwrap()
+        )
+        .parse()
+        .expect("Invalid server addr config");
+
+        tracing::info!("listening on {}", addr);
 
         let _result = axum::Server::bind(&addr)
             .serve(app.into_make_service())

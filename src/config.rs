@@ -4,7 +4,7 @@ use std::env;
 const CONFIG_FILE_PREFIX: &str = "config";
 
 pub fn get_config() -> Config {
-    let env = env::var("ENV").unwrap_or_else(|_| "dev".into());
+    let env = env::var("APP_ENV").unwrap_or_else(|_| "dev".into());
     let config = Config::builder()
         // Start off by merging in the "default" configuration file
         .add_source(File::with_name(&format!(
@@ -22,6 +22,6 @@ pub fn get_config() -> Config {
         // panic on error
         .unwrap();
 
-    tracing::info!("Config:\n{:?}", config);
+    tracing::info!("{:?}", config);
     config
 }
