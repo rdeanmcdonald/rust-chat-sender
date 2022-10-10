@@ -19,3 +19,6 @@ clap = { version = "3.2", features = ["derive"] }
 chrono = "0.4"
 uuid = { version = "1.1", features = ["v4", "fast-rng", "serde"] }
 message = { git = "https://github.com/rdeanmcdonald/rust-chat-message" }
+config = "0.13.1"
+strum = "0.24"
+strum_macros = "0.24"

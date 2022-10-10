@@ -1,20 +1,15 @@
-use axum::http::StatusCode;
 use axum::{response::Json, routing::post, Router};
 use futures::future::join_all;
 use message::ClientMessage;
 use rdkafka::config::ClientConfig;
-use rdkafka::error::KafkaError;
-use rdkafka::message::OwnedMessage;
 use rdkafka::producer::{FutureProducer, FutureRecord};
-use serde::{Deserialize, Serialize};
-use serde_json::{json, Result, Value};
-use std::boxed::Box;
+use serde_json::{json, Value};
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::spawn;
-use tokio::task::JoinHandle;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use uuid::{uuid, Uuid};
+
+mod config;
 
 #[tokio::main]
 async fn main() {
@@ -27,6 +22,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    let config = get_config();
     let server_handle = spawn(async move {
         // kafka producer is cheap to clone
         let producer: FutureProducer = ClientConfig::new()
