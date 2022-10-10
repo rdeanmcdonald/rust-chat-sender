@@ -22,11 +22,23 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let config = get_config();
     let server_handle = spawn(async move {
+        let config = config::get_config();
+
+        println!(
+            "HIIIIIIIIIIII: {}",
+            config.get_string("kafka.host").unwrap()
+        );
         // kafka producer is cheap to clone
         let producer: FutureProducer = ClientConfig::new()
-            .set("bootstrap.servers", "localhost:29092")
+            .set(
+                "bootstrap.servers",
+                &format!(
+                    "{}:{}",
+                    config.get_string("kafka.host").unwrap(),
+                    config.get_string("kafka.port").unwrap()
+                ),
+            )
             .set("message.timeout.ms", "5000")
             .create()
             .expect("Failed to create producer");
